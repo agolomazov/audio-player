@@ -1,4 +1,4 @@
-// UI elements
+// UI элементы
 const musicContaner = document.querySelector('.music-container');
 const playBtn = document.querySelector('#play');
 const prevBtn = document.querySelector('#prev');
@@ -10,22 +10,23 @@ const title = document.querySelector("#title");
 const cover = document.querySelector("#cover");
 
 
-// Song titles
+// Названия песен
 const songs = ['hey', 'summer', 'ukulele'];
 
 // Keep track of songs
 let songIndex = 2;
 
-// Initially load song info DOM
+// Загрузить песню после загрузки страницы
 loadSong(songs[songIndex]);
 
-// Update song details
+// Обновить UI после загрузки песни
 function loadSong(song) {
   title.innerHTML = song;
   audio.src = `music/${song}.mp3`;
   cover.src = `images/${song}.jpg`;
 }
 
+// Запустить песню
 function playSong() {
   musicContaner.classList.add('play');
   playBtn.querySelector('i.fas').classList.remove('fa-pause');
@@ -34,6 +35,7 @@ function playSong() {
   audio.play();
 }
 
+// Поставить песню на паузу
 function pauseSong() {
   musicContaner.classList.remove("play");
   playBtn.querySelector("i.fas").classList.remove("fa-play");
@@ -42,6 +44,7 @@ function pauseSong() {
   audio.pause();
 }
 
+// Запустить предыдущую песню
 function prevSong() {
   songIndex--;
 
@@ -53,6 +56,7 @@ function prevSong() {
   playSong();
 }
 
+// Запустить следующую песню
 function nextSong() {
   songIndex++;
 
@@ -64,12 +68,14 @@ function nextSong() {
   playSong();
 }
 
+// Перерисовать прогресс-бар
 function updateProgress(event) {
   const { duration, currentTime } = event.srcElement;
   const progressPercent = (currentTime / duration) * 100;
   progress.style.width = `${progressPercent.toFixed(0)}%`;
 }
 
+// Перемотать песню
 function setProgress(e) {
   const width = this.clientWidth;
   const clickX = e.offsetX;
@@ -79,15 +85,38 @@ function setProgress(e) {
   audio.currentTime = (clickX / width) * duration;
 }
 
-// Event listeners
-playBtn.addEventListener('click', () => {
-  const isPlaying = musicContaner.classList.contains('play');
+// Обработчик для управления плеером с клавиатуры
+function keyPressHandler(event) {
+  const { keyCode } = event;
 
-  if(isPlaying) {
+  switch (keyCode) {
+    case 32:
+      togglePlaySong();
+      break;
+    case 37:
+      prevSong();
+      break;
+    case 39:
+      nextSong();
+      break;
+    default:
+      break;
+  }
+}
+
+function togglePlaySong() {
+  const isPlaying = musicContaner.classList.contains("play");
+
+  if (isPlaying) {
     pauseSong();
   } else {
     playSong();
   }
+}
+
+// Event listeners
+playBtn.addEventListener('click', () => {
+  togglePlaySong();
 });
 
 // Change song events
@@ -98,3 +127,5 @@ audio.addEventListener('timeupdate', updateProgress);
 audio.addEventListener('ended', nextSong);
 
 progressContainer.addEventListener('click', setProgress);
+
+window.addEventListener('keydown', keyPressHandler);
